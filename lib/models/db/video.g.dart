@@ -41,6 +41,11 @@ const VideoSchema = CollectionSchema(
       id: 4,
       name: r'title',
       type: IsarType.string,
+    ),
+    r'uperId': PropertySchema(
+      id: 5,
+      name: r'uperId',
+      type: IsarType.long,
     )
   },
   estimateSize: _videoEstimateSize,
@@ -55,6 +60,24 @@ const VideoSchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
+        IndexPropertySchema(
+          name: r'publishTime',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'uperId_publishTime': IndexSchema(
+      id: -7287344226130980220,
+      name: r'uperId_publishTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'uperId',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
         IndexPropertySchema(
           name: r'publishTime',
           type: IndexType.value,
@@ -103,6 +126,7 @@ void _videoSerialize(
   writer.writeString(offsets[2], object.desc);
   writer.writeDateTime(offsets[3], object.publishTime);
   writer.writeString(offsets[4], object.title);
+  writer.writeLong(offsets[5], object.uperId);
 }
 
 Video _videoDeserialize(
@@ -117,6 +141,7 @@ Video _videoDeserialize(
     desc: reader.readString(offsets[2]),
     publishTime: reader.readDateTime(offsets[3]),
     title: reader.readString(offsets[4]),
+    uperId: reader.readLong(offsets[5]),
   );
   return object;
 }
@@ -138,6 +163,8 @@ P _videoDeserializeProp<P>(
       return (reader.readDateTime(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -166,6 +193,14 @@ extension VideoQueryWhereSort on QueryBuilder<Video, Video, QWhere> {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'publishTime'),
+      );
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhere> anyUperIdPublishTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'uperId_publishTime'),
       );
     });
   }
@@ -322,6 +357,191 @@ extension VideoQueryWhere on QueryBuilder<Video, Video, QWhereClause> {
         lower: [lowerPublishTime],
         includeLower: includeLower,
         upper: [upperPublishTime],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdEqualToAnyPublishTime(
+      int uperId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'uperId_publishTime',
+        value: [uperId],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdNotEqualToAnyPublishTime(
+      int uperId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [],
+              upper: [uperId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [],
+              upper: [uperId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdGreaterThanAnyPublishTime(
+    int uperId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [uperId],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdLessThanAnyPublishTime(
+    int uperId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [],
+        upper: [uperId],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdBetweenAnyPublishTime(
+    int lowerUperId,
+    int upperUperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [lowerUperId],
+        includeLower: includeLower,
+        upper: [upperUperId],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdPublishTimeEqualTo(
+      int uperId, DateTime publishTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'uperId_publishTime',
+        value: [uperId, publishTime],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause>
+      uperIdEqualToPublishTimeNotEqualTo(int uperId, DateTime publishTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId],
+              upper: [uperId, publishTime],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId, publishTime],
+              includeLower: false,
+              upper: [uperId],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId, publishTime],
+              includeLower: false,
+              upper: [uperId],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'uperId_publishTime',
+              lower: [uperId],
+              upper: [uperId, publishTime],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause>
+      uperIdEqualToPublishTimeGreaterThan(
+    int uperId,
+    DateTime publishTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [uperId, publishTime],
+        includeLower: include,
+        upper: [uperId],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause>
+      uperIdEqualToPublishTimeLessThan(
+    int uperId,
+    DateTime publishTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [uperId],
+        upper: [uperId, publishTime],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> uperIdEqualToPublishTimeBetween(
+    int uperId,
+    DateTime lowerPublishTime,
+    DateTime upperPublishTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'uperId_publishTime',
+        lower: [uperId, lowerPublishTime],
+        includeLower: includeLower,
+        upper: [uperId, upperPublishTime],
         includeUpper: includeUpper,
       ));
     });
@@ -945,6 +1165,58 @@ extension VideoQueryFilter on QueryBuilder<Video, Video, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Video, Video, QAfterFilterCondition> uperIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uperId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterFilterCondition> uperIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'uperId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterFilterCondition> uperIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'uperId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterFilterCondition> uperIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'uperId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension VideoQueryObject on QueryBuilder<Video, Video, QFilterCondition> {}
@@ -1023,6 +1295,18 @@ extension VideoQuerySortBy on QueryBuilder<Video, Video, QSortBy> {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
+
+  QueryBuilder<Video, Video, QAfterSortBy> sortByUperId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uperId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterSortBy> sortByUperIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uperId', Sort.desc);
+    });
+  }
 }
 
 extension VideoQuerySortThenBy on QueryBuilder<Video, Video, QSortThenBy> {
@@ -1097,6 +1381,18 @@ extension VideoQuerySortThenBy on QueryBuilder<Video, Video, QSortThenBy> {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
+
+  QueryBuilder<Video, Video, QAfterSortBy> thenByUperId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uperId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterSortBy> thenByUperIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'uperId', Sort.desc);
+    });
+  }
 }
 
 extension VideoQueryWhereDistinct on QueryBuilder<Video, Video, QDistinct> {
@@ -1131,6 +1427,12 @@ extension VideoQueryWhereDistinct on QueryBuilder<Video, Video, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Video, Video, QDistinct> distinctByUperId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'uperId');
     });
   }
 }
@@ -1169,6 +1471,12 @@ extension VideoQueryProperty on QueryBuilder<Video, Video, QQueryProperty> {
   QueryBuilder<Video, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
+    });
+  }
+
+  QueryBuilder<Video, int, QQueryOperations> uperIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'uperId');
     });
   }
 }

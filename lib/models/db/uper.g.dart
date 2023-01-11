@@ -17,28 +17,33 @@ const UperSchema = CollectionSchema(
   name: r'Uper',
   id: -2737407647114250626,
   properties: {
-    r'face': PropertySchema(
+    r'createTime': PropertySchema(
       id: 0,
+      name: r'createTime',
+      type: IsarType.dateTime,
+    ),
+    r'face': PropertySchema(
+      id: 1,
       name: r'face',
       type: IsarType.string,
     ),
     r'lastSeen': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'lastSeen',
       type: IsarType.dateTime,
     ),
     r'lastUpdate': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'lastUpdate',
       type: IsarType.dateTime,
     ),
     r'name': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
     r'sign': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'sign',
       type: IsarType.string,
     )
@@ -70,6 +75,19 @@ const UperSchema = CollectionSchema(
       properties: [
         IndexPropertySchema(
           name: r'lastSeen',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'createTime': IndexSchema(
+      id: -7085130145048818916,
+      name: r'createTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createTime',
           type: IndexType.value,
           caseSensitive: false,
         )
@@ -109,11 +127,12 @@ void _uperSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.face);
-  writer.writeDateTime(offsets[1], object.lastSeen);
-  writer.writeDateTime(offsets[2], object.lastUpdate);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.sign);
+  writer.writeDateTime(offsets[0], object.createTime);
+  writer.writeString(offsets[1], object.face);
+  writer.writeDateTime(offsets[2], object.lastSeen);
+  writer.writeDateTime(offsets[3], object.lastUpdate);
+  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[5], object.sign);
 }
 
 Uper _uperDeserialize(
@@ -123,13 +142,14 @@ Uper _uperDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Uper(
-    face: reader.readString(offsets[0]),
+    face: reader.readString(offsets[1]),
     id: id,
-    name: reader.readString(offsets[3]),
-    sign: reader.readString(offsets[4]),
+    name: reader.readString(offsets[4]),
+    sign: reader.readString(offsets[5]),
   );
-  object.lastSeen = reader.readDateTime(offsets[1]);
-  object.lastUpdate = reader.readDateTime(offsets[2]);
+  object.createTime = reader.readDateTime(offsets[0]);
+  object.lastSeen = reader.readDateTime(offsets[2]);
+  object.lastUpdate = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -141,14 +161,16 @@ P _uperDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
-    case 1:
       return (reader.readDateTime(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -187,6 +209,14 @@ extension UperQueryWhereSort on QueryBuilder<Uper, Uper, QWhere> {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'lastSeen'),
+      );
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterWhere> anyCreateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'createTime'),
       );
     });
   }
@@ -437,9 +467,152 @@ extension UperQueryWhere on QueryBuilder<Uper, Uper, QWhereClause> {
       ));
     });
   }
+
+  QueryBuilder<Uper, Uper, QAfterWhereClause> createTimeEqualTo(
+      DateTime createTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'createTime',
+        value: [createTime],
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterWhereClause> createTimeNotEqualTo(
+      DateTime createTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createTime',
+              lower: [],
+              upper: [createTime],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createTime',
+              lower: [createTime],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createTime',
+              lower: [createTime],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'createTime',
+              lower: [],
+              upper: [createTime],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterWhereClause> createTimeGreaterThan(
+    DateTime createTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createTime',
+        lower: [createTime],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterWhereClause> createTimeLessThan(
+    DateTime createTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createTime',
+        lower: [],
+        upper: [createTime],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterWhereClause> createTimeBetween(
+    DateTime lowerCreateTime,
+    DateTime upperCreateTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'createTime',
+        lower: [lowerCreateTime],
+        includeLower: includeLower,
+        upper: [upperCreateTime],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension UperQueryFilter on QueryBuilder<Uper, Uper, QFilterCondition> {
+  QueryBuilder<Uper, Uper, QAfterFilterCondition> createTimeEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterFilterCondition> createTimeGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterFilterCondition> createTimeLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createTime',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterFilterCondition> createTimeBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Uper, Uper, QAfterFilterCondition> faceEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1043,6 +1216,18 @@ extension UperQueryLinks on QueryBuilder<Uper, Uper, QFilterCondition> {
 }
 
 extension UperQuerySortBy on QueryBuilder<Uper, Uper, QSortBy> {
+  QueryBuilder<Uper, Uper, QAfterSortBy> sortByCreateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterSortBy> sortByCreateTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createTime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Uper, Uper, QAfterSortBy> sortByFace() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'face', Sort.asc);
@@ -1105,6 +1290,18 @@ extension UperQuerySortBy on QueryBuilder<Uper, Uper, QSortBy> {
 }
 
 extension UperQuerySortThenBy on QueryBuilder<Uper, Uper, QSortThenBy> {
+  QueryBuilder<Uper, Uper, QAfterSortBy> thenByCreateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createTime', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Uper, Uper, QAfterSortBy> thenByCreateTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createTime', Sort.desc);
+    });
+  }
+
   QueryBuilder<Uper, Uper, QAfterSortBy> thenByFace() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'face', Sort.asc);
@@ -1179,6 +1376,12 @@ extension UperQuerySortThenBy on QueryBuilder<Uper, Uper, QSortThenBy> {
 }
 
 extension UperQueryWhereDistinct on QueryBuilder<Uper, Uper, QDistinct> {
+  QueryBuilder<Uper, Uper, QDistinct> distinctByCreateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createTime');
+    });
+  }
+
   QueryBuilder<Uper, Uper, QDistinct> distinctByFace(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1217,6 +1420,12 @@ extension UperQueryProperty on QueryBuilder<Uper, Uper, QQueryProperty> {
   QueryBuilder<Uper, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Uper, DateTime, QQueryOperations> createTimeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createTime');
     });
   }
 

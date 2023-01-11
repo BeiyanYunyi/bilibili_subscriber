@@ -8,6 +8,6 @@ class UpersController extends GetxController {
   final upers = <Uper>[].obs;
   Future<void> load() async {
     DbService db = Get.find();
-    upers.value = await db.isar.upers.where().findAll();
+    upers.value = await db.isar.upers.where().sortByCreateTime().findAll();
   }
 }
