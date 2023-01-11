@@ -122,13 +122,14 @@ Uper _uperDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Uper();
-  object.face = reader.readString(offsets[0]);
-  object.id = id;
+  final object = Uper(
+    face: reader.readString(offsets[0]),
+    id: id,
+    name: reader.readString(offsets[3]),
+    sign: reader.readString(offsets[4]),
+  );
   object.lastSeen = reader.readDateTime(offsets[1]);
   object.lastUpdate = reader.readDateTime(offsets[2]);
-  object.name = reader.readString(offsets[3]);
-  object.sign = reader.readString(offsets[4]);
   return object;
 }
 

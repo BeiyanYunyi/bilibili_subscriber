@@ -53,14 +53,18 @@ class UperCard extends StatelessWidget {
   @override
   Widget build(context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      margin: const EdgeInsets.fromLTRB(8, 0, 8, 2),
       child: Card(
+        child: InkWell(
+          onTap: () {},
           child: UperCardDisplay(
-        name: uper.name,
-        sign: uper.sign,
-        mid: uper.id.toString(),
-        face: uper.face,
-      )),
+            name: uper.name,
+            sign: uper.sign,
+            mid: uper.id.toString(),
+            face: uper.face,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -19,7 +19,7 @@ Future<List<Vlist>> getVideosAfter(
     final res = await getVideos(mid: mid, pn: pn);
     if (res.isEmpty) break;
     for (var element in res) {
-      if (element.created! * 1000 > after.microsecondsSinceEpoch) {
+      if (element.created! * 1000 > after.millisecondsSinceEpoch) {
         videos.add(element);
       } else {
         hasMore = false;

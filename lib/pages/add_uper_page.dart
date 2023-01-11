@@ -68,14 +68,11 @@ class UperInfo extends StatelessWidget {
                   ),
                   IconButton(
                       onPressed: () async {
-                        final uper = Uper()
-                          ..face = card.face
-                          ..id = int.parse(card.mid)
-                          ..name = card.name
-                          ..sign = card.sign;
+                        final uper = Uper.fromCard(card);
                         await dbService.isar.writeTxn(() async {
                           await dbService.isar.upers.put(uper);
                         });
+                        await uper.updateVideos();
                         Get.back();
                         Get.snackbar("成功", "已成功添加 UP 主: ${uper.name}");
                       },

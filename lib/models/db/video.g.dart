@@ -48,7 +48,21 @@ const VideoSchema = CollectionSchema(
   deserialize: _videoDeserialize,
   deserializeProp: _videoDeserializeProp,
   idName: r'isarId',
-  indexes: {},
+  indexes: {
+    r'publishTime': IndexSchema(
+      id: 1698621452194960201,
+      name: r'publishTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'publishTime',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {
     r'uper': LinkSchema(
       id: -2404756642340607996,
@@ -97,12 +111,13 @@ Video _videoDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Video();
-  object.bvId = reader.readString(offsets[0]);
-  object.cover = reader.readString(offsets[1]);
-  object.desc = reader.readString(offsets[2]);
-  object.publishTime = reader.readDateTime(offsets[3]);
-  object.title = reader.readString(offsets[4]);
+  final object = Video(
+    bvId: reader.readString(offsets[0]),
+    cover: reader.readString(offsets[1]),
+    desc: reader.readString(offsets[2]),
+    publishTime: reader.readDateTime(offsets[3]),
+    title: reader.readString(offsets[4]),
+  );
   return object;
 }
 
@@ -144,6 +159,14 @@ extension VideoQueryWhereSort on QueryBuilder<Video, Video, QWhere> {
   QueryBuilder<Video, Video, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhere> anyPublishTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'publishTime'),
+      );
     });
   }
 }
@@ -209,6 +232,96 @@ extension VideoQueryWhere on QueryBuilder<Video, Video, QWhereClause> {
         lower: lowerIsarId,
         includeLower: includeLower,
         upper: upperIsarId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> publishTimeEqualTo(
+      DateTime publishTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'publishTime',
+        value: [publishTime],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> publishTimeNotEqualTo(
+      DateTime publishTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'publishTime',
+              lower: [],
+              upper: [publishTime],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'publishTime',
+              lower: [publishTime],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'publishTime',
+              lower: [publishTime],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'publishTime',
+              lower: [],
+              upper: [publishTime],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> publishTimeGreaterThan(
+    DateTime publishTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'publishTime',
+        lower: [publishTime],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> publishTimeLessThan(
+    DateTime publishTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'publishTime',
+        lower: [],
+        upper: [publishTime],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Video, Video, QAfterWhereClause> publishTimeBetween(
+    DateTime lowerPublishTime,
+    DateTime upperPublishTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'publishTime',
+        lower: [lowerPublishTime],
+        includeLower: includeLower,
+        upper: [upperPublishTime],
         includeUpper: includeUpper,
       ));
     });

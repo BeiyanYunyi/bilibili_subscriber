@@ -1,5 +1,10 @@
+import 'package:bilibili_subscriber/controllers/db.dart';
 import 'package:bilibili_subscriber/models/db/video.dart';
+import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+
+import '../../services/bilibili.dart';
+import '../uper_info_res/card.dart';
 
 part 'uper.g.dart';
 
@@ -22,4 +27,41 @@ class Uper {
   String face = "";
 
   final videos = IsarLinks<Video>();
+
+  Uper(
+      {required this.id,
+      required this.name,
+      required this.face,
+      required this.sign});
+
+  factory Uper.fromCard(Card card) => Uper(
+      id: int.parse(card.mid),
+      name: card.name,
+      sign: card.sign,
+      face: card.face);
+
+  Future<int> updateVideos() async {
+    DbService db = Get.find();
+    final vlists = await getVideosAfter(mid: id, after: lastSeen);
+    final videos = vlists.map((e) => Video.fromVlist(e)).toList();
+
+    await db.isar.writeTxn(() async {
+      await db.isar.videos.putAll(videos);
+      this.videos.addAll(videos);
+      await this.videos.save();
+    });
+    return videos.length;
+  }
+
+  Future<int> trimVideos() async {
+    DbService db = Get.find();
+    var count = 0;
+    await db.isar.writeTxn(() async {
+      count = await db.isar.videos
+          .where()
+          .publishTimeLessThan(lastSeen)
+          .deleteAll();
+    });
+    return count;
+  }
 }
