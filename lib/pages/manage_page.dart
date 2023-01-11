@@ -1,31 +1,24 @@
 import 'package:bilibili_subscriber/components/uper_card.dart';
+import 'package:bilibili_subscriber/controllers/db.dart';
+import 'package:bilibili_subscriber/controllers/upers.dart';
 import 'package:bilibili_subscriber/interfaces/app_page.dart';
 import 'package:bilibili_subscriber/models/db/uper.dart';
 import 'package:bilibili_subscriber/pages/add_uper_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
 
 import '../components/app_navigation_destination.dart';
-import '../controllers/db.dart';
 
 class ManagePageContent extends StatelessWidget {
   const ManagePageContent({super.key});
   @override
   Widget build(BuildContext context) {
-    DbService dbService = Get.find();
-    return FutureBuilder(
-        future: dbService.isar.upers.where().findAll(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data != null) {
-            return ListView(
-                children: snapshot.data!
-                    .map((uper) => UperCard(uper: uper))
-                    .toList());
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
+    UpersController c = Get.put(UpersController());
+    DbService db = Get.find();
+    db.isar.upers.watchLazy().listen((e) => c.load());
+    c.load();
+    return Obx(() => ListView(
+        children: c.upers.map((uper) => UperCard(uper: uper)).toList()));
   }
 }
 

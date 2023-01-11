@@ -3,7 +3,7 @@ import 'package:bilibili_subscriber/models/db/video.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
-import '../../services/bilibili.dart';
+import '../../controllers/bilibili.dart';
 import '../uper_info_res/card.dart';
 
 part 'uper.g.dart';
@@ -46,9 +46,11 @@ class Uper {
     final videos = vlists.map((e) => Video.fromVlist(e)).toList();
 
     await db.isar.writeTxn(() async {
+      lastUpdate = DateTime.now();
       await db.isar.videos.putAll(videos);
       this.videos.addAll(videos);
       await this.videos.save();
+      await db.isar.upers.put(this);
     });
     return videos.length;
   }
