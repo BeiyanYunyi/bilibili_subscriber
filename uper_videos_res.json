@@ -1,0 +1,46 @@
+{
+  "__className": "uper_videos_res",
+  "r@code": 0,
+  "r@message": "0",
+  "r@ttl": 1,
+  "data": {
+    "list": {
+      "r@vlist": [
+        {
+          "r@comment": 21024,
+          "r@typeid": 31,
+          "r@play": 1223903,
+          "r@pic": "http://i0.hdslb.com/bfs/archive/c392288c19bbdf3762919774bce01c76dc346344.jpg",
+          "r@subtitle": "",
+          "r@description": "没有听过这首歌的话会是人参的一大遗憾呢..(望天",
+          "r@copyright": "2",
+          "r@title": "【天哥版】最春哥",
+          "r@review": 0,
+          "r@author": "bishi",
+          "r@mid": 1,
+          "r@created": 1247496094,
+          "r@length": "01:38",
+          "r@video_review": 3055,
+          "r@aid": 55,
+          "r@bvid": "BV1xx411c7Ug",
+          "r@hide_click": false,
+          "r@is_pay": 0,
+          "r@is_union_video": 0,
+          "r@is_steins_gate": 0,
+          "r@is_live_playback": 0,
+          "r@meta": null,
+          "r@is_avoided": 0,
+          "r@attribute": 0
+        }
+      ]
+    },
+    "page": { "r@pn": 1, "r@ps": 25, "r@count": 2 },
+    "episodic_button": {
+      "r@text": "播放全部",
+      "r@uri": "//www.bilibili.com/medialist/play/1?from=space"
+    },
+    "r@is_risk": false,
+    "r@gaia_res_type": 0,
+    "r@gaia_data": null
+  }
+}

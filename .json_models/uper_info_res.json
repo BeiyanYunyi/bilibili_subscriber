@@ -1,0 +1,89 @@
+{
+  "__className": "uper_info_res",
+  "r@code": 0,
+  "r@message": "0",
+  "r@ttl": 1,
+  "data": {
+    "card": {
+      "r@mid": "1",
+      "r@name": "bishi",
+      "r@approve": false,
+      "r@sex": "男",
+      "r@rank": "10000",
+      "r@face": "http://i0.hdslb.com/bfs/face/34c5b30a990c7ce4a809626d8153fa7895ec7b63.gif",
+      "r@face_nft": 0,
+      "r@face_nft_type": 0,
+      "r@DisplayRank": "0",
+      "r@regtime": 0,
+      "r@spacesta": 0,
+      "r@birthday": "",
+      "r@place": "",
+      "r@description": "",
+      "r@article": 0,
+      "attentions": [],
+      "r@fans": 163579,
+      "r@friend": 5,
+      "r@attention": 5,
+      "r@sign": "",
+      "level_info": {
+        "r@current_level": 5,
+        "r@current_min": 0,
+        "r@current_exp": 0,
+        "r@next_exp": 0
+      },
+      "pendant": {
+        "r@pid": 0,
+        "r@name": "",
+        "r@image": "",
+        "r@expire": 0,
+        "r@image_enhance": "",
+        "r@image_enhance_frame": ""
+      },
+      "nameplate": {
+        "r@nid": 0,
+        "r@name": "",
+        "r@image": "",
+        "r@image_small": "",
+        "r@level": "",
+        "r@condition": ""
+      },
+      "Official": { "r@role": 0, "r@title": "", "r@desc": "", "r@type": -1 },
+      "official_verify": { "r@type": -1, "r@desc": "" },
+      "vip": {
+        "r@type": 2,
+        "r@status": 1,
+        "r@due_date": 1832169600000,
+        "r@vip_pay_type": 1,
+        "r@theme_type": 0,
+        "label": {
+          "r@path": "",
+          "r@text": "年度大会员",
+          "r@label_theme": "annual_vip",
+          "r@text_color": "FFFFFF",
+          "r@bg_style": 1,
+          "r@bg_color": "FB7299",
+          "r@border_color": "",
+          "r@use_img_label": true,
+          "r@img_label_uri_hans": "",
+          "r@img_label_uri_hant": "",
+          "r@img_label_uri_hans_static": "https://i0.hdslb.com/bfs/vip/8d4f8bfc713826a5412a0a27eaaac4d6b9ede1d9.png",
+          "r@img_label_uri_hant_static": "https://i0.hdslb.com/bfs/activity-plat/static/20220614/e369244d0b14644f5e1a06431e22a4d5/VEW8fCC0hg.png"
+        },
+        "r@avatar_subscript": 1,
+        "r@nickname_color": "FB7299",
+        "r@role": 3,
+        "r@avatar_subscript_url": "",
+        "r@tv_vip_status": 0,
+        "r@tv_vip_pay_type": 0,
+        "r@vipType": 2,
+        "r@vipStatus": 1
+      },
+      "r@is_senior_member": 0
+    },
+    "r@following": false,
+    "r@archive_count": 2,
+    "r@article_count": 0,
+    "r@follower": 163579,
+    "r@like_num": 102300
+  }
+}
