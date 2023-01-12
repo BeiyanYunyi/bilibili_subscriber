@@ -50,10 +50,11 @@ class UperInfo extends StatelessWidget {
               child: Column(
                 children: [
                   UperCardDisplay(
-                      name: card.name,
-                      sign: card.sign,
-                      mid: int.parse(card.mid),
-                      face: card.face),
+                    name: card.name,
+                    sign: card.sign,
+                    mid: int.parse(card.mid),
+                    face: card.face,
+                  ),
                   Container(
                     margin: const EdgeInsets.all(8),
                     child: Wrap(
@@ -67,16 +68,17 @@ class UperInfo extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                      onPressed: () async {
-                        final uper = Uper.fromCard(card);
-                        await dbService.isar.writeTxn(() async {
-                          await dbService.isar.upers.put(uper);
-                        });
-                        await uper.updateVideos();
-                        Get.back();
-                        Get.snackbar("成功", "已成功添加 UP 主: ${uper.name}");
-                      },
-                      icon: const Icon(Icons.check))
+                    icon: const Icon(Icons.check),
+                    onPressed: () async {
+                      final uper = Uper.fromCard(card);
+                      await dbService.isar.writeTxn(() async {
+                        await dbService.isar.upers.put(uper);
+                      });
+                      await uper.updateVideos();
+                      Get.back();
+                      Get.snackbar("成功", "已成功添加 UP 主: ${uper.name}");
+                    },
+                  )
                 ],
               ),
             );

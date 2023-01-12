@@ -62,8 +62,8 @@ class UperCardManagement extends StatelessWidget {
         children: [
           OutlinedButton.icon(
               onPressed: () async {
-                final count = await uper.update();
-                Get.snackbar("成功", "成功更新 UP 主：${uper.name}，共 $count 条视频",
+                final res = await uper.update();
+                Get.snackbar("成功", "成功更新 UP 主：${uper.name}，共 ${res.count} 条视频",
                     duration: const Duration(seconds: 1));
               },
               icon: const Icon(Icons.refresh),

@@ -12,7 +12,7 @@ class VideoCard extends StatelessWidget {
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
-        //direction: Axis.vertical,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Image.network(
@@ -20,14 +20,21 @@ class VideoCard extends StatelessWidget {
             height: 120,
             isAntiAlias: true,
           ),
-          Text(
-            video.title,
-            textScaleFactor: 1,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Text(
+              video.title,
+              textScaleFactor: 1,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const Expanded(
+            flex: 1,
+            child: SizedBox(),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8),
             child: Wrap(
               children: [
                 Chip(

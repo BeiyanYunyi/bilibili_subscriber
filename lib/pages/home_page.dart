@@ -21,9 +21,10 @@ class HomePageContent extends StatelessWidget {
       },
     );
     return Obx(
-      () => GridView(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, childAspectRatio: 0.9),
+      () => GridView.extent(
+        maxCrossAxisExtent: 390,
+        childAspectRatio: 0.9,
+        shrinkWrap: true,
         children: videos.map((video) => VideoCard(video: video)).toList(),
       ),
     );

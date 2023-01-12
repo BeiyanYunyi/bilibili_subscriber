@@ -9,6 +9,14 @@ import 'video.dart';
 
 part 'uper.g.dart';
 
+class UperUpdateRes {
+  final Uper uper;
+
+  final int count;
+
+  const UperUpdateRes({required this.uper, required this.count});
+}
+
 @collection
 class Uper {
   late Id id;
@@ -78,9 +86,9 @@ class Uper {
   /// 1. 更新 UP 主个人信息
   /// 2. 更新视频
   /// 3. 删除在已阅时间之前的视频
-  Future<int> update() async {
+  Future<UperUpdateRes> update() async {
     final res = await getUperInfo(mid: id);
-    if (res.data?.card == null) return 0;
+    if (res.data?.card == null) return UperUpdateRes(uper: this, count: 0);
     final card = res.data!.card!;
     face = card.face;
     sign = card.sign;
@@ -91,7 +99,7 @@ class Uper {
     });
     final count = await updateVideos();
     await trimVideos();
-    return count;
+    return UperUpdateRes(uper: this, count: count);
   }
 
   Future<void> delete() async {
@@ -119,15 +127,16 @@ class Uper {
   }
 
   /// 更新所有 UP 主的视频
-  static Future<Stream<void>> updateAll() async {
+  static Future<Stream<UperUpdateRes>> updateAll() async {
     final db = Get.find<DbService>();
     final upers = await db.isar.upers.where().findAll();
     var i = 0;
-    final List<Future<void>> pms = [];
+    final List<Future<UperUpdateRes>> pms = [];
     for (final uper in upers) {
-      Future.delayed(Duration(seconds: i)).then((e) {
-        uper.update();
+      final fu = Future.delayed(Duration(seconds: i)).then((e) {
+        return uper.update();
       });
+      pms.add(fu);
       i += 1;
     }
     return Stream.fromFutures(pms);
