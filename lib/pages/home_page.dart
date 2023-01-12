@@ -2,6 +2,7 @@ import 'package:bilibili_subscriber/components/video_card.dart';
 import 'package:bilibili_subscriber/controllers/db.dart';
 import 'package:bilibili_subscriber/interfaces/app_page.dart';
 import 'package:bilibili_subscriber/models/db/video.dart';
+import 'package:bilibili_subscriber/pages/update_all_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
@@ -30,6 +31,16 @@ class HomePageContent extends StatelessWidget {
   }
 }
 
+class HomePageFab extends StatelessWidget {
+  const HomePageFab({super.key});
+  @override
+  build(context) {
+    return FloatingActionButton(
+        onPressed: () => Get.to(() => const UpdateAllPage()),
+        child: const Icon(Icons.refresh));
+  }
+}
+
 class HomePage implements AppPage {
   @override
   final String title = "更新";
@@ -38,7 +49,7 @@ class HomePage implements AppPage {
   @override
   final IconData selectedIcon = Icons.home;
   @override
-  final fab = const SizedBox();
+  final fab = const HomePageFab();
 
   const HomePage();
 

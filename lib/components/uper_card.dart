@@ -1,6 +1,7 @@
 import 'package:bilibili_subscriber/models/db/uper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UperCardDisplay extends StatelessWidget {
   const UperCardDisplay({
@@ -61,21 +62,35 @@ class UperCardManagement extends StatelessWidget {
         runSpacing: 8,
         children: [
           OutlinedButton.icon(
-              onPressed: () async {
-                final res = await uper.update();
-                Get.snackbar("成功", "成功更新 UP 主：${uper.name}，共 ${res.count} 条视频",
+            onPressed: () async {
+              final Uri uri =
+                  Uri.parse("https://space.bilibili.com/${uper.id}");
+              if (!await launchUrl(uri)) {
+                Get.snackbar("错误", "无法打开 ${uri.toString()}",
                     duration: const Duration(seconds: 1));
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text("更新")),
+              }
+            },
+            icon: const Icon(Icons.person),
+            label: const Text("空间"),
+          ),
           OutlinedButton.icon(
-              onPressed: () async {
-                await uper.see();
-                Get.snackbar("成功", "成功标记 UP 主：${uper.name} 为已阅",
-                    duration: const Duration(seconds: 1));
-              },
-              icon: const Icon(Icons.check),
-              label: const Text("已阅"))
+            onPressed: () async {
+              final res = await uper.update();
+              Get.snackbar("成功", "成功更新 UP 主：${uper.name}，共 ${res.count} 条视频",
+                  duration: const Duration(seconds: 1));
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text("更新"),
+          ),
+          OutlinedButton.icon(
+            onPressed: () async {
+              await uper.see();
+              Get.snackbar("成功", "成功标记 UP 主：${uper.name} 为已阅",
+                  duration: const Duration(seconds: 1));
+            },
+            icon: const Icon(Icons.check),
+            label: const Text("已阅"),
+          ),
         ],
       ),
     );
