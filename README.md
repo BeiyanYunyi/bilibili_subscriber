@@ -1,16 +1,10 @@
-# bilibili_subscriber
+# Bilibili Subscriber
 
-A new Flutter project.
+> In memory of my 6-digit UID account which was permanently banned by bilibili at 2021-06-11
+> 谨以此纪念我在 2021 年 6 月 11 日被 B 站永久封禁的 6 位数 UID 大号
 
-## Getting Started
+[bilibili-valkyrie](https://github.com/bilibili-valkyrie/bilibili-valkyrie) 的继承者。纯客户端实现，无需服务器，因此取消了多用户功能。
 
-This project is a starting point for a Flutter application.
+## 功能简介
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+该项目旨在提供一个第三方的关注 / 订阅功能，以在被封号的情况下对自己希望关注的用户进行关注 / 订阅。
