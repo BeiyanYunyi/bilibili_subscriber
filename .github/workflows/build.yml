@@ -59,7 +59,7 @@ jobs:
           mkdir artf/windows
           mv build/windows/runner/Release/* artf/windows
           mv biliSubscriber.nsi artf
-          mv LICENSE artf
+          mv LICENSE artf/windows
       - name: Upload build result
         uses: actions/upload-artifact@v3
         with:
