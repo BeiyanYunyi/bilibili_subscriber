@@ -1,0 +1,110 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  BuildAndroid:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable" # or: 'beta', 'dev' or 'master'
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: Android
+          path: build/app/outputs/flutter-apk
+
+  BuildWindows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable" # or: 'beta', 'dev' or 'master'
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build EXE
+        run: flutter build windows --release
+      - name: Move files
+        run: |
+          mkdir artf
+          mkdir artf/windows
+          mv build/windows/runner/Release/* artf/windows
+          mv biliSubscriber.nsi artf
+          mv LICENSE artf
+      - name: Upload build result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Windows-x86_64
+          path: artf
+      #- name: Build msix
+      #  run: flutter pub run msix:create
+      #- name: Upload msix
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: Windows-x86_64-msix
+      #    path: build/windows/runner/Release/biliSubscriber.msix
+
+  Release:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    needs:
+      - BuildAndroid
+      - BuildWindows
+    steps:
+      - name: Install NSIS
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y nsis
+      - name: Make dir
+        run: mkdir artf release
+      - name: Get Windows Release
+        uses: actions/download-artifact@v3
+        with:
+          name: Windows-x86_64
+          path: artf
+      - name: Build MSYS
+        run: |
+          cd artf
+          makensis biliSubscriber.nsi
+          mv "BiliBili Subscriber Installer.exe" ../release/Windows-x86_64-NSIS-Installer.exe
+          cd ..
+      - name: Get Android Release
+        uses: actions/download-artifact@v3
+        with:
+          name: Android
+          path: release
+      - name: Release
+        uses: fnkr/github-action-ghr@v1
+        env:
+          GHR_PATH: release/
+          GITHUB_TOKEN: ${{ github.token }}
+          GHR_REPLACE: true
+          GHR_TITLE: ${{ needs.build-dist-bundle.outputs.version }}
+          GHR_DRAFT: true
