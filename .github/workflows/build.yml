@@ -75,7 +75,6 @@ jobs:
 
   Release:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     needs:
       - BuildAndroid
       - BuildWindows
@@ -103,6 +102,7 @@ jobs:
           name: Android
           path: release
       - name: Release
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: fnkr/github-action-ghr@v1
         env:
           GHR_PATH: release/
