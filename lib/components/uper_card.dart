@@ -36,18 +36,21 @@ class UperCardDisplay extends StatelessWidget {
         ],
       ),
       leading: ClipOval(
-        child: Image.network(
-          face,
-          height: 48,
-          width: 48,
-        ),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () =>
+                launchUrlOrShowSnackbar("https://space.bilibili.com/$mid"),
+            child: Image.network(
+              face,
+              height: 48,
+              width: 48,
+            )),
       ),
       isThreeLine: true,
     );
   }
 }
-
-enum UperCardManagementOptions { delete, openSpace }
 
 class UperCardManagement extends StatelessWidget {
   const UperCardManagement({super.key, required this.uper});
@@ -63,6 +66,28 @@ class UperCardManagement extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
+          ElevatedButton.icon(
+            onPressed: () async {
+              await Get.defaultDialog(
+                title: "确定取关",
+                content: Text("确定要取关 UP 主 ${uper.name} 吗？"),
+                cancel: TextButton.icon(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close),
+                    label: const Text("取消")),
+                confirm: TextButton.icon(
+                    onPressed: () async {
+                      await uper.delete();
+                      Get.back();
+                      Get.snackbar("成功", "已取关 UP 主 ${uper.name}");
+                    },
+                    icon: const Icon(Icons.check),
+                    label: const Text("确认")),
+              );
+            },
+            icon: const Icon(Icons.delete_forever),
+            label: const Text("取关"),
+          ),
           ElevatedButton.icon(
             onPressed: () async {
               final res = await uper.update();
@@ -81,33 +106,6 @@ class UperCardManagement extends StatelessWidget {
             icon: const Icon(Icons.check),
             label: const Text("已阅"),
           ),
-          PopupMenuButton(
-            tooltip: "更多",
-            onSelected: (value) async {
-              switch (value) {
-                case UperCardManagementOptions.openSpace:
-                  launchUrlOrShowSnackbar(
-                      "https://space.bilibili.com/${uper.id}");
-                  break;
-                default:
-                  await uper.delete();
-                  Get.snackbar("成功", "已取关 UP 主 ${uper.name}");
-                  break;
-              }
-            },
-            itemBuilder: (ctx) {
-              return [
-                const PopupMenuItem(
-                  value: UperCardManagementOptions.delete,
-                  child: Text("删除"),
-                ),
-                const PopupMenuItem(
-                  value: UperCardManagementOptions.openSpace,
-                  child: Text("打开空间"),
-                ),
-              ];
-            },
-          )
         ],
       ),
     );
