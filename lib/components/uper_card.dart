@@ -1,5 +1,6 @@
 import 'package:bilibili_subscriber/models/db/uper.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class UperCardDisplay extends StatelessWidget {
   const UperCardDisplay({
@@ -12,7 +13,7 @@ class UperCardDisplay extends StatelessWidget {
 
   final String name;
   final String sign;
-  final String mid;
+  final int mid;
   final String face;
 
   @override
@@ -28,7 +29,7 @@ class UperCardDisplay extends StatelessWidget {
         children: <Widget>[
           Text(sign),
           Text(
-            mid,
+            mid.toString(),
             textScaleFactor: 0.8,
           ),
         ],
@@ -45,6 +46,42 @@ class UperCardDisplay extends StatelessWidget {
   }
 }
 
+class UperCardManagement extends StatelessWidget {
+  const UperCardManagement({super.key, required this.uper});
+
+  final Uper uper;
+
+  @override
+  build(context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          OutlinedButton.icon(
+              onPressed: () async {
+                final count = await uper.update();
+                Get.snackbar("成功", "成功更新 UP 主：${uper.name}，共 $count 条视频",
+                    duration: const Duration(seconds: 1));
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text("更新")),
+          OutlinedButton.icon(
+              onPressed: () async {
+                await uper.see();
+                Get.snackbar("成功", "成功标记 UP 主：${uper.name} 为已阅",
+                    duration: const Duration(seconds: 1));
+              },
+              icon: const Icon(Icons.check),
+              label: const Text("已阅"))
+        ],
+      ),
+    );
+  }
+}
+
 class UperCard extends StatelessWidget {
   final Uper uper;
 
@@ -55,14 +92,16 @@ class UperCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(8, 0, 8, 2),
       child: Card(
-        child: InkWell(
-          onTap: () {},
-          child: UperCardDisplay(
-            name: uper.name,
-            sign: uper.sign,
-            mid: uper.id.toString(),
-            face: uper.face,
-          ),
+        child: Column(
+          children: [
+            UperCardDisplay(
+              name: uper.name,
+              sign: uper.sign,
+              mid: uper.id,
+              face: uper.face,
+            ),
+            UperCardManagement(uper: uper)
+          ],
         ),
       ),
     );

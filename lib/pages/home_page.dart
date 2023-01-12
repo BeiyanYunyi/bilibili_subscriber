@@ -1,6 +1,10 @@
+import 'package:bilibili_subscriber/components/video_card.dart';
+import 'package:bilibili_subscriber/controllers/db.dart';
 import 'package:bilibili_subscriber/interfaces/app_page.dart';
+import 'package:bilibili_subscriber/models/db/video.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 
 import '../components/app_navigation_destination.dart';
 
@@ -9,14 +13,18 @@ class HomePageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var count = 0.obs;
-    return Container(
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          Obx(() => Text("更新$count", textScaleFactor: 5)),
-          FloatingActionButton(onPressed: () => count += 1)
-        ],
+    DbService db = Get.find();
+    final videos = <Video>[].obs;
+    db.isar.videos.where().sortByPublishTime().findAll().then(
+      (value) {
+        videos.value = value;
+      },
+    );
+    return Obx(
+      () => GridView(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, childAspectRatio: 0.9),
+        children: videos.map((video) => VideoCard(video: video)).toList(),
       ),
     );
   }

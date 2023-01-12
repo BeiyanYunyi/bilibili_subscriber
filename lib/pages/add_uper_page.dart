@@ -52,7 +52,7 @@ class UperInfo extends StatelessWidget {
                   UperCardDisplay(
                       name: card.name,
                       sign: card.sign,
-                      mid: card.mid,
+                      mid: int.parse(card.mid),
                       face: card.face),
                   Container(
                     margin: const EdgeInsets.all(8),
