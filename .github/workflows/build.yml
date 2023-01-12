@@ -103,10 +103,6 @@ jobs:
           path: release
       - name: Release
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        uses: fnkr/github-action-ghr@v1
-        env:
-          GHR_PATH: release/
-          GITHUB_TOKEN: ${{ github.token }}
-          GHR_REPLACE: true
-          GHR_TITLE: ${{ needs.build-dist-bundle.outputs.version }}
-          GHR_DRAFT: true
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*
