@@ -1,33 +1,64 @@
-import 'package:bilibili_subscriber/api/get_uper_info.dart';
-import 'package:bilibili_subscriber/api/get_uper_videos.dart';
-import 'package:bilibili_subscriber/components/uper_card.dart';
-import 'package:bilibili_subscriber/controllers/db.dart';
-import 'package:bilibili_subscriber/models/db/uper.dart';
-import 'package:bilibili_subscriber/models/uper_info_res/uper_info_res.dart';
-import 'package:bilibili_subscriber/models/uper_videos_res/uper_videos_res.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
 
-Future<Tuple2<T1, T2>> waitConcurrently<T1, T2>(
-    Future<T1> future1, Future<T2> future2) async {
-  late T1 result1;
-  late T2 result2;
+import '../api/get_uper_info.dart';
+import '../api/get_uper_videos.dart';
+import '../components/uper_card.dart';
+import '../controllers/db.dart';
+import '../models/db/uper.dart';
+import '../models/uper_info_res/uper_info_res.dart';
+import '../models/uper_videos_res/uper_videos_res.dart';
+import '../utils/wait_concurrently.dart';
 
-  await Future.wait([
-    future1.then((value) => result1 = value),
-    future2.then((value) => result2 = value)
-  ]);
+class AddUperController extends GetxController {
+  final uperVideosRes = UperVideosRes(
+    code: -404,
+    message: 'no videos',
+    ttl: 0,
+  ).obs;
 
-  return Future.value(Tuple2(result1, result2));
-}
+  final uperInfoRes = UperInfoRes(code: 0, message: "", ttl: 0).obs;
 
-Future<Tuple2<UperInfoRes, UperVideosRes>> getUperInfoAndVideos(
-    {required int mid}) async {
-  final uperInfoFuture = getUperInfo(mid: mid);
-  final uperVideosFuture = getUperVideos(mid: mid, pn: 1);
-  final result = await waitConcurrently(uperInfoFuture, uperVideosFuture);
-  return result;
+  bool get isOk {
+    return uperInfoRes.value.data?.card != null &&
+        uperVideosRes.value.data?.list?.vlist != null;
+  }
+
+  final inputUid = "".obs;
+
+  final queryUid = "".obs;
+
+  void init() {
+    uperInfoRes.value = UperInfoRes(code: 0, message: "", ttl: 0);
+    uperVideosRes.value = UperVideosRes(
+      code: -404,
+      message: 'no videos',
+      ttl: 0,
+    );
+    queryUid.value = "";
+  }
+
+  Future<void> getUperInfoAndVideos({required int mid}) async {
+    final uperInfoFuture = getUperInfo(mid: mid);
+    final uperVideosFuture = getUperVideos(mid: mid, pn: 1);
+    final result = await waitConcurrently(uperInfoFuture, uperVideosFuture);
+    uperInfoRes.value = result.item1;
+    uperVideosRes.value = result.item2;
+    if (!isOk) {
+      Get.snackbar("错误", "获取 UP 主信息失败");
+    }
+  }
+
+  Future<void> subscribe() async {
+    DbService dbService = Get.find();
+    final uper = Uper.fromCard(uperInfoRes.value.data!.card!);
+    await dbService.isar.writeTxn(() async {
+      await dbService.isar.upers.put(uper);
+    });
+    await uper.updateVideos();
+    Get.back();
+    Get.snackbar("成功", "已成功添加 UP 主: ${uper.name}");
+  }
 }
 
 class UperInfo extends StatelessWidget {
@@ -37,54 +68,39 @@ class UperInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DbService dbService = Get.find();
-    return FutureBuilder(
-        future: getUperInfoAndVideos(mid: mid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data?.item1.data?.card != null &&
-              snapshot.data?.item2.data?.list?.vlist != null) {
-            final card = snapshot.data!.item1.data!.card!;
-            final videos = snapshot.data!.item2.data!.list!.vlist;
-            return Card(
-              child: Column(
-                children: [
-                  UperCardDisplay(
-                    name: card.name,
-                    sign: card.sign,
-                    mid: int.parse(card.mid),
-                    face: card.face,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: videos
-                          .map((video) => Chip(
-                                label: Text(video.title!),
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.check),
-                    onPressed: () async {
-                      final uper = Uper.fromCard(card);
-                      await dbService.isar.writeTxn(() async {
-                        await dbService.isar.upers.put(uper);
-                      });
-                      await uper.updateVideos();
-                      Get.back();
-                      Get.snackbar("成功", "已成功添加 UP 主: ${uper.name}");
-                    },
-                  )
-                ],
+    AddUperController c = Get.find();
+    c.getUperInfoAndVideos(mid: mid);
+    return Obx(() {
+      if (c.isOk) {
+        final card = c.uperInfoRes.value.data!.card!;
+        final videos = c.uperVideosRes.value.data!.list!.vlist;
+        return Card(
+          child: Column(
+            children: [
+              UperCardDisplay(
+                name: card.name,
+                sign: card.sign,
+                mid: int.parse(card.mid),
+                face: card.face,
               ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
+              Container(
+                margin: const EdgeInsets.all(8),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: videos
+                      .map((video) => Chip(
+                            label: Text(video.title!),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return const Center(child: CircularProgressIndicator());
+    });
   }
 }
 
@@ -93,10 +109,11 @@ class AddUperPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// 用于保存输入值
-    var inputUid = "".obs;
+    final c = Get.put(AddUperController());
     var inputUidController = TextEditingController();
-    var queryUid = "".obs;
+
+    /// 用于保存输入值
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("添加 up 主"),
@@ -108,34 +125,42 @@ class AddUperPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Obx(() => TextField(
-                  enabled: queryUid.value == "",
+                  enabled: c.queryUid.value == "",
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(), label: Text("UID")),
                   controller: inputUidController,
-                  onChanged: (value) => inputUid.value = value,
+                  onChanged: (value) => c.inputUid.value = value,
                 )),
             Container(
               margin: const EdgeInsets.only(top: 16),
-              child: IconButton(
-                  onPressed: () => {
-                        if (queryUid.value == "")
-                          queryUid.value = inputUid.value
-                        else
-                          queryUid.value = ""
-                      },
-                  icon: Obx(() => queryUid.value == ""
-                      ? const Icon(Icons.add)
-                      : const Icon(Icons.close))),
+              child: Obx(() {
+                if (c.queryUid.value == "") {
+                  return IconButton(
+                    onPressed: () => {c.queryUid.value = c.inputUid.value},
+                    icon: const Icon(Icons.add),
+                  );
+                }
+                return Wrap(children: [
+                  IconButton(
+                    onPressed: () => c.init(),
+                    icon: const Icon(Icons.close),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () async {
+                      await c.subscribe();
+                    },
+                  )
+                ]);
+              }),
             ),
             Obx(() {
-              if (queryUid.value == "") {
-                return Container(
-                  margin: const EdgeInsets.only(top: 16),
-                );
+              if (c.queryUid.value == "") {
+                return const SizedBox();
               }
               return Container(
                 margin: const EdgeInsets.only(top: 16),
-                child: UperInfo(mid: int.parse(queryUid.value)),
+                child: UperInfo(mid: int.parse(c.queryUid.value)),
               );
             })
           ],
