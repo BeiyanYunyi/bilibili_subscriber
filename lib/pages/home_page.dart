@@ -21,12 +21,15 @@ class HomePageContent extends StatelessWidget {
       videos.value = value;
     });
     return Obx(
-      () => GridView.extent(
-        maxCrossAxisExtent: 292.6,
-        childAspectRatio: 0.9,
-        shrinkWrap: true,
-        children: videos.map((video) => VideoCard(video: video)).toList(),
-      ),
+      () {
+        if (videos.isEmpty) return const Center(child: Text("暂无视频"));
+        return GridView.extent(
+          maxCrossAxisExtent: 292.6,
+          childAspectRatio: 0.88,
+          shrinkWrap: true,
+          children: videos.map((video) => VideoCard(video: video)).toList(),
+        );
+      },
     );
   }
 }

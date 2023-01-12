@@ -17,8 +17,13 @@ class ManagePageContent extends StatelessWidget {
     DbService db = Get.find();
     db.isar.upers.watchLazy().listen((e) => c.load());
     c.load();
-    return Obx(() => ListView(
-        children: c.upers.map((uper) => UperCard(uper: uper)).toList()));
+    return Obx(() {
+      if (c.upers.isEmpty) {
+        return const Center(child: Text("你还没有关注 UP 主，点击左下角关注一个吧"));
+      }
+      return ListView(
+          children: c.upers.map((uper) => UperCard(uper: uper)).toList());
+    });
   }
 }
 
