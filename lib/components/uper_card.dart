@@ -47,6 +47,8 @@ class UperCardDisplay extends StatelessWidget {
   }
 }
 
+enum UperCardManagementOptions { delete, openSpace }
+
 class UperCardManagement extends StatelessWidget {
   const UperCardManagement({super.key, required this.uper});
 
@@ -61,18 +63,6 @@ class UperCardManagement extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
-          OutlinedButton.icon(
-            onPressed: () async {
-              final Uri uri =
-                  Uri.parse("https://space.bilibili.com/${uper.id}");
-              if (!await launchUrl(uri)) {
-                Get.snackbar("错误", "无法打开 ${uri.toString()}",
-                    duration: const Duration(seconds: 1));
-              }
-            },
-            icon: const Icon(Icons.person),
-            label: const Text("空间"),
-          ),
           OutlinedButton.icon(
             onPressed: () async {
               final res = await uper.update();
@@ -91,6 +81,37 @@ class UperCardManagement extends StatelessWidget {
             icon: const Icon(Icons.check),
             label: const Text("已阅"),
           ),
+          PopupMenuButton(
+            tooltip: "更多",
+            onSelected: (value) async {
+              switch (value) {
+                case UperCardManagementOptions.openSpace:
+                  final Uri uri =
+                      Uri.parse("https://space.bilibili.com/${uper.id}");
+                  if (!await launchUrl(uri)) {
+                    Get.snackbar("错误", "无法打开 ${uri.toString()}",
+                        duration: const Duration(seconds: 1));
+                  }
+                  break;
+                default:
+                  await uper.delete();
+                  Get.snackbar("成功", "已取关 UP 主 ${uper.name}");
+                  break;
+              }
+            },
+            itemBuilder: (ctx) {
+              return [
+                const PopupMenuItem(
+                  value: UperCardManagementOptions.delete,
+                  child: Text("删除"),
+                ),
+                const PopupMenuItem(
+                  value: UperCardManagementOptions.openSpace,
+                  child: Text("打开空间"),
+                ),
+              ];
+            },
+          )
         ],
       ),
     );

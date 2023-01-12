@@ -105,6 +105,7 @@ class Uper {
   Future<void> delete() async {
     final db = Get.find<DbService>();
     await db.isar.writeTxn(() async {
+      await db.isar.videos.where().uperIdEqualToAnyPublishTime(id).deleteAll();
       await db.isar.upers.delete(id);
     });
   }
