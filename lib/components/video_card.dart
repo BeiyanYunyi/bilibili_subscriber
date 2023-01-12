@@ -23,7 +23,7 @@ class VideoCard extends StatelessWidget {
         onTap: () => launchUrlOrShowSnackbar(
             "https://www.bilibili.com/video/${video.bvId}"),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Image.network(
