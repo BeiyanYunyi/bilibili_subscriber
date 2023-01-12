@@ -15,14 +15,13 @@ class HomePageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     DbService db = Get.find();
     final videos = <Video>[].obs;
-    db.isar.videos.where().sortByPublishTime().findAll().then(
-      (value) {
-        videos.value = value;
-      },
-    );
+    db.isar.videos.watchLazy(fireImmediately: true).listen((event) async {
+      final value = await db.isar.videos.where().sortByPublishTime().findAll();
+      videos.value = value;
+    });
     return Obx(
       () => GridView.extent(
-        maxCrossAxisExtent: 390,
+        maxCrossAxisExtent: 292.6,
         childAspectRatio: 0.9,
         shrinkWrap: true,
         children: videos.map((video) => VideoCard(video: video)).toList(),
