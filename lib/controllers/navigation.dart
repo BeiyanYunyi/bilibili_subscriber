@@ -1,4 +1,4 @@
-import 'package:bilibili_subscriber/pages/about_page.dart';
+import 'package:bilibili_subscriber/pages/settings_page.dart';
 import 'package:bilibili_subscriber/pages/home_page.dart';
 import 'package:bilibili_subscriber/pages/manage_page.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ class NavigationController extends GetxController {
   set selectedIndex(int index) => _selectedIndex.value = index;
   final managepage = const ManagePage();
   final homepage = const HomePage();
-  final aboutpage = const AboutPage();
+  final aboutpage = const SettingsPage();
   Widget getScreen() {
     return Obx(() {
       switch (selectedIndex) {

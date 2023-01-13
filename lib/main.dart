@@ -1,10 +1,10 @@
-import 'package:bilibili_subscriber/controllers/navigation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "package:get/get.dart";
 
 import 'components/navigation_bars.dart';
 import 'controllers/db.dart';
+import 'controllers/navigation.dart';
 
 Future<void> initServices() async {
   await Get.putAsync(() => DbService().init());
