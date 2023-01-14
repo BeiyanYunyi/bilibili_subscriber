@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:archive/archive.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
@@ -151,5 +155,23 @@ class Uper {
       await uper.see();
     });
     await Future.wait(pms);
+  }
+
+  static Future<String> exportToJson() async {
+    final db = Get.find<DbService>();
+    final upers = await db.isar.upers.where().exportJsonRaw((bytes) {
+      return GZipEncoder().encode(bytes, level: 9);
+    });
+    return base64UrlEncode(upers!);
+  }
+
+  static Future<void> importFromJson(String json) async {
+    final db = Get.find<DbService>();
+    final bytes = base64Decode(json);
+    final uint8List =
+        Uint8List.fromList(GZipDecoder().decodeBytes(bytes, verify: true));
+    await db.isar.writeTxn(() async {
+      await db.isar.upers.importJsonRaw(uint8List);
+    });
   }
 }
