@@ -52,7 +52,8 @@ class VideoCard extends StatelessWidget {
               await db.isar.writeTxn(() async {
                 db.isar.videos.delete(video.isarId);
               });
-              Get.snackbar("成功", "已删除 ${video.title}");
+              Get.snackbar("成功", "已删除 ${video.title}",
+                  duration: const Duration(seconds: 1));
               break;
             case VideoCardOptions.see:
               final uper = (await db.isar.upers.get(video.uperId))!;
@@ -61,6 +62,8 @@ class VideoCard extends StatelessWidget {
                 db.isar.upers.put(uper);
               });
               await uper.trimVideos();
+              Get.snackbar("成功", "已标记 ${video.uper.value!.name} 已阅至此",
+                  duration: const Duration(seconds: 1));
               break;
             case null:
               break;
