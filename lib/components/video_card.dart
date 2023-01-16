@@ -16,12 +16,56 @@ class VideoCard extends StatelessWidget {
   @override
   build(context) {
     DbService db = Get.find();
+
     return Card(
       semanticContainer: true,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: () => launchUrlOrShowSnackbar(
             "https://www.bilibili.com/video/${video.bvId}"),
+        onLongPress: () async {
+          final RenderBox card = context.findRenderObject() as RenderBox;
+          final RenderBox overlay =
+              navigator?.overlay?.context.findRenderObject() as RenderBox;
+          final value = await showMenu(
+              context: context,
+              position: RelativeRect.fromRect(
+                Rect.fromPoints(
+                  card.localToGlobal(Offset.zero, ancestor: overlay),
+                  card.localToGlobal(card.size.bottomRight(Offset.zero),
+                      ancestor: overlay),
+                ),
+                Offset.zero & overlay.size,
+              ),
+              items: <PopupMenuEntry<VideoCardOptions>>[
+                const PopupMenuItem(
+                  value: VideoCardOptions.remove,
+                  child: Text("删除"),
+                ),
+                const PopupMenuItem(
+                  value: VideoCardOptions.see,
+                  child: Text("已阅至此"),
+                ),
+              ]);
+          switch (value) {
+            case VideoCardOptions.remove:
+              await db.isar.writeTxn(() async {
+                db.isar.videos.delete(video.isarId);
+              });
+              Get.snackbar("成功", "已删除 ${video.title}");
+              break;
+            case VideoCardOptions.see:
+              final uper = (await db.isar.upers.get(video.uperId))!;
+              uper.lastSeen = video.publishTime;
+              await db.isar.writeTxn(() async {
+                db.isar.upers.put(uper);
+              });
+              await uper.trimVideos();
+              break;
+            case null:
+              break;
+          }
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -44,11 +88,8 @@ class VideoCard extends StatelessWidget {
               child: SizedBox(),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.only(left: 8, bottom: 8, right: 8),
               child: Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 8,
                 children: [
                   Chip(
                     avatar: ClipOval(
@@ -60,42 +101,9 @@ class VideoCard extends StatelessWidget {
                     label: Text(
                       video.uper.value!.name,
                       textScaleFactor: 0.8,
+                      overflow: TextOverflow.fade,
                     ),
                   ),
-                  PopupMenuButton(
-                    iconSize: 16,
-                    tooltip: "选项",
-                    onSelected: (value) async {
-                      switch (value) {
-                        case VideoCardOptions.remove:
-                          await db.isar.writeTxn(() async {
-                            db.isar.videos.delete(video.isarId);
-                          });
-                          Get.snackbar("成功", "已删除 ${video.title}");
-                          break;
-                        case VideoCardOptions.see:
-                          final uper = (await db.isar.upers.get(video.uperId))!;
-                          uper.lastSeen = video.publishTime;
-                          await db.isar.writeTxn(() async {
-                            db.isar.upers.put(uper);
-                          });
-                          await uper.trimVideos();
-                          break;
-                      }
-                    },
-                    itemBuilder: (ctxt) {
-                      return <PopupMenuEntry<VideoCardOptions>>[
-                        const PopupMenuItem(
-                          value: VideoCardOptions.remove,
-                          child: Text("删除"),
-                        ),
-                        const PopupMenuItem(
-                          value: VideoCardOptions.see,
-                          child: Text("已阅至此"),
-                        ),
-                      ];
-                    },
-                  )
                 ],
               ),
             )
