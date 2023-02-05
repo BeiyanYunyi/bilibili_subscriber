@@ -9,6 +9,8 @@
 
 该项目旨在提供一个第三方的关注 / 订阅功能，以在被封号的情况下对自己希望关注的用户进行关注 / 订阅。
 
+以 Flutter 编写，原生跨平台（Windows / Linux / MacOS / Android / iOS / 网页），提供预构建的 Windows 和 Android 版本，其它平台请自行构建。需要部署在网页平台时，请自行搭建反向代理并修改代码中的 API 地址，以绕过浏览器的跨域限制。
+
 ## 📱 界面预览
 
 ![home](previews/home.png)
