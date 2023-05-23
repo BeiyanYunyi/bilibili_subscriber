@@ -5,9 +5,13 @@ import "package:get/get.dart";
 import 'components/navigation_bars.dart';
 import 'controllers/db.dart';
 import 'controllers/navigation.dart';
+import 'controllers/wbi_key.dart';
 
 Future<void> initServices() async {
-  await Get.putAsync(() => DbService().init());
+  await Future.wait([
+    Get.putAsync(() => DbService().init()),
+    Get.putAsync(() => WbiKeyService().init())
+  ]);
   Get.put(NavigationController());
 }
 
