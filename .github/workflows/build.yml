@@ -26,6 +26,7 @@ jobs:
         run: flutter pub get
       - name: Configure Keystore
         run: |
+          touch android/app/keystore.jks
           echo "$SIGN_KEY" | base64 --decode > android/app/keystore.jks
           echo "storeFile=keystore.jks" >> android/key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> android/key.properties
