@@ -16,6 +16,7 @@ Future<void> initServices() async {
 }
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await initServices();
   runApp(const MyApp());
 }
