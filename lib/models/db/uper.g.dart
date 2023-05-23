@@ -106,7 +106,7 @@ const UperSchema = CollectionSchema(
   getId: _uperGetId,
   getLinks: _uperGetLinks,
   attach: _uperAttach,
-  version: '3.1.0',
+  version: '3.1.0+1',
 );
 
 int _uperEstimateSize(

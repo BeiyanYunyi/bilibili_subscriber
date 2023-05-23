@@ -22,7 +22,7 @@ class InfoPage extends StatelessWidget {
             children: [
               Text(
                 "bilibili 订阅",
-                style: context.theme.textTheme.headline4,
+                style: context.theme.textTheme.headlineMedium,
               ),
               const Padding(
                 padding: EdgeInsets.only(top: appMargin),
@@ -32,18 +32,18 @@ class InfoPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: appMargin),
                 child: Text(
                   "开发者",
-                  style: context.theme.textTheme.headline5,
+                  style: context.theme.textTheme.headlineSmall,
                 ),
               ),
               const Padding(
                 padding: EdgeInsets.only(top: appMargin),
-                child: Text("lixiang810"),
+                child: Text("北雁云依"),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: appMargin),
                 child: Text(
                   "开源协议",
-                  style: context.theme.textTheme.headline5,
+                  style: context.theme.textTheme.headlineSmall,
                 ),
               ),
               const Padding(
@@ -53,7 +53,7 @@ class InfoPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: appMargin),
                 child: ElevatedButton.icon(
-                  onPressed: () => launchUrlOrShowSnackbar("https://github.com/lixiang810/bilibili_subscriber"),
+                  onPressed: () => launchUrlOrShowSnackbar("https://github.com/BeiyanYunyi/bilibili_subscriber"),
                   label: const SelectionContainer.disabled(child: Text("查看源码")),
                   icon: const Icon(Icons.code),
                 ),

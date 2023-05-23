@@ -99,7 +99,7 @@ const VideoSchema = CollectionSchema(
   getId: _videoGetId,
   getLinks: _videoGetLinks,
   attach: _videoAttach,
-  version: '3.1.0',
+  version: '3.1.0+1',
 );
 
 int _videoEstimateSize(
